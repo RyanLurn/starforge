@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { CURRENT_DIRECTORY, CANCEL_MESSAGE } from "@/constants";
 import { makeDirectory } from "@/lib/fs/make-directory";
-import { getStats } from "@/operations/get-stats";
+import { getStats } from "@/lib/fs/get-stats";
 
 /**
  * Get the directory of the root `package.json`.
