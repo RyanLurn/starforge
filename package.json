@@ -12,9 +12,15 @@
     "fix": "bun run lint:fix && bun run format"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@types/bun": "1.3.14",
     "@types/node": "25.9.3",
+    "eslint": "10.5.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-perfectionist": "5.9.1",
+    "globals": "17.6.0",
     "prettier": "3.8.4",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.61.1"
   }
 }
