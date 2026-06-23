@@ -2,49 +2,14 @@
 
 import { isCancel, cancel, intro, outro, text } from "@clack/prompts";
 import { basename } from "node:path";
-import { cwd } from "node:process";
 import { z } from "zod";
 
-import { resolveRealPath } from "@/operations/resolve-real-path";
-import { CURRENT_DIRECTORY, CANCEL_MESSAGE } from "@/constants";
-import { getStats } from "@/operations/get-stats";
+import { getWorkingDirectory } from "@/operations/get-working-directory";
+import { CANCEL_MESSAGE } from "@/constants";
 
 intro("Gravity is ready. Time to forge a star.");
 
-const targetDirectory = await text({
-  message: "Where will the star be born?",
-  placeholder: CURRENT_DIRECTORY,
-  defaultValue: CURRENT_DIRECTORY,
-  initialValue: CURRENT_DIRECTORY,
-  validate: z.string().trim().default(CURRENT_DIRECTORY),
-});
-
-if (isCancel(targetDirectory)) {
-  cancel(CANCEL_MESSAGE);
-  process.exit(1);
-}
-
-let workingDirectory: string;
-if (targetDirectory === CURRENT_DIRECTORY) {
-  workingDirectory = cwd();
-} else {
-  const resolveRealPathResult = await resolveRealPath(targetDirectory);
-  if (!resolveRealPathResult.success) {
-    cancel(resolveRealPathResult.error.message);
-    process.exit(1);
-  }
-  workingDirectory = resolveRealPathResult.data;
-
-  const getStatsResult = await getStats(workingDirectory);
-  if (!getStatsResult.success) {
-    cancel(getStatsResult.error.message);
-    process.exit(1);
-  }
-  if (getStatsResult.data.isFile()) {
-    cancel("The coordinate points to a single asteroid. A nebula is required.");
-    process.exit(1);
-  }
-}
+const workingDirectory = await getWorkingDirectory();
 
 const workingDirectoryName = basename(workingDirectory);
 
