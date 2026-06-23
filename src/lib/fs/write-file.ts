@@ -1,5 +1,3 @@
-import { write } from "bun";
-
 import type { UnexpectedErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
 
@@ -8,7 +6,7 @@ export async function writeFile(
   content: string
 ): Promise<Result<null, UnexpectedErrorCode>> {
   try {
-    await write(path, content);
+    await Bun.write(path, content);
     return {
       success: true,
       data: null,
