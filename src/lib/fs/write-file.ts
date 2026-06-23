@@ -5,10 +5,10 @@ import type { Result } from "@/types/result";
 
 export async function writeFile(
   path: string,
-  input: string
+  content: string
 ): Promise<Result<null, UnexpectedErrorCode>> {
   try {
-    await write(path, input);
+    await write(path, content);
     return {
       success: true,
       data: null,
