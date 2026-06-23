@@ -2,6 +2,10 @@
   "name": "starforge",
   "type": "module",
   "private": true,
+  "bin": {
+    "starforge": "./src/index.ts",
+    "sf": "./src/index.ts"
+  },
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint --cache",
@@ -12,7 +16,8 @@
     "fix": "bun run lint:fix && bun run format"
   },
   "dependencies": {
-    "@clack/prompts": "1.6.0"
+    "@clack/prompts": "1.6.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
