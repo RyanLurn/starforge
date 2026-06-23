@@ -6,8 +6,8 @@ import { cwd } from "node:process";
 import { z } from "zod";
 
 import { resolveRealPath } from "@/operations/resolve-real-path";
+import { CURRENT_DIRECTORY, CANCEL_MESSAGE } from "@/constants";
 import { getStats } from "@/operations/get-stats";
-import { CURRENT_DIRECTORY } from "@/constants";
 
 intro("Gravity is ready. Time to forge a star.");
 
@@ -20,7 +20,7 @@ const targetDirectory = await text({
 });
 
 if (isCancel(targetDirectory)) {
-  cancel("Process canceled.");
+  cancel(CANCEL_MESSAGE);
   process.exit(1);
 }
 
@@ -61,7 +61,7 @@ const packageName = await text({
 });
 
 if (isCancel(packageName)) {
-  cancel("Process canceled.");
+  cancel(CANCEL_MESSAGE);
   process.exit(1);
 }
 
