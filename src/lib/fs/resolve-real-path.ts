@@ -1,11 +1,13 @@
 import { realpath } from "node:fs/promises";
 
-import type { UnexpectedErrorCode, NoEntryErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
+
+import { UnexpectedError } from "@/utils/errors/unexpected";
+import { NoEntryError } from "@/lib/fs/errors/no-entry";
 
 export async function resolveRealPath(
   path: string
-): Promise<Result<string, UnexpectedErrorCode | NoEntryErrorCode>> {
+): Promise<Result<string, UnexpectedError | NoEntryError>> {
   try {
     const realPath = await realpath(path);
     return {
@@ -19,22 +21,17 @@ export async function resolveRealPath(
         case "ENOENT": {
           return {
             success: false,
-            error: {
-              code: "NO_ENTRY_ERROR",
-              message: `The path: ${path} does not exist.`,
-              retryable: false,
-            },
+            error: new NoEntryError({ path, cause: exception }),
           };
         }
       }
     }
     return {
       success: false,
-      error: {
-        code: "UNEXPECTED_ERROR",
-        message: `An unexpected error was caught while resolving ${path} to its real path.`,
-        retryable: false,
-      },
+      error: new UnexpectedError({
+        action: `resolve real path for ${path}`,
+        cause: error,
+      }),
     };
   }
 }
