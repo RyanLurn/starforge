@@ -2,12 +2,15 @@ import type { Stats } from "node:fs";
 
 import { stat } from "node:fs/promises";
 
-import type { UnexpectedErrorCode, NoEntryErrorCode } from "@/types/app-error";
 import type { Result } from "@/types/result";
+
+import { UnexpectedError } from "@/utils/errors/unexpected";
+import { NoEntryError } from "@/lib/fs/errors/no-entry";
+import { AccessError } from "@/lib/fs/errors/access";
 
 export async function getStats(
   path: string
-): Promise<Result<Stats, UnexpectedErrorCode | NoEntryErrorCode>> {
+): Promise<Result<Stats, UnexpectedError | NoEntryError | AccessError>> {
   try {
     const stats = await stat(path);
     return {
@@ -21,22 +24,23 @@ export async function getStats(
         case "ENOENT": {
           return {
             success: false,
-            error: {
-              code: "NO_ENTRY_ERROR",
-              message: `The location of ${path} does not exist on the file system.`,
-              retryable: false,
-            },
+            error: new NoEntryError({ path, cause: exception }),
+          };
+        }
+        case "EACCES": {
+          return {
+            success: false,
+            error: new AccessError({ path, cause: exception }),
           };
         }
       }
     }
     return {
       success: false,
-      error: {
-        code: "UNEXPECTED_ERROR",
-        message: `An unexpected error was caught while trying to get stats for ${path}.`,
-        retryable: false,
-      },
+      error: new UnexpectedError({
+        action: `get stats for ${path}`,
+        cause: error,
+      }),
     };
   }
 }
