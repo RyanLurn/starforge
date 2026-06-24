@@ -1,24 +1,34 @@
-import type { UnexpectedErrorCode } from "@/types/app-error";
-import type { Result } from "@/types/result";
+import { join } from "node:path";
 
-export async function writeFile(
-  path: string,
-  content: string
-): Promise<Result<null, UnexpectedErrorCode>> {
+import type { DirectoryTag, ExistingTag } from "@/lib/fs/types";
+import type { Result } from "@/types/result";
+import type { Tagged } from "@/types/tag";
+
+import { UnexpectedError } from "@/utils/errors/unexpected";
+
+export async function writeFile({
+  parent,
+  name,
+  content,
+}: {
+  parent: Tagged<string, DirectoryTag | ExistingTag>;
+  name: string;
+  content: string;
+}): Promise<Result<null, UnexpectedError>> {
+  const path = join(parent, name);
   try {
     await Bun.write(path, content);
     return {
       success: true,
       data: null,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
-      error: {
-        code: "UNEXPECTED_ERROR",
-        message: `An unexpected error was caught while trying to write a file at ${path}.`,
-        retryable: false,
-      },
+      error: new UnexpectedError({
+        action: `write a file to ${path}`,
+        cause: error,
+      }),
     };
   }
 }
