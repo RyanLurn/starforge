@@ -3,7 +3,9 @@ import type { MakeDirectoryOptions } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 
+import type { DirectoryTag } from "@/lib/fs/types";
 import type { Result } from "@/types/result";
+import type { Tagged } from "@/types/tag";
 
 import { UnexpectedError } from "@/utils/errors/unexpected";
 import { NoEntryError } from "@/lib/fs/errors/no-entry";
@@ -13,13 +15,16 @@ export async function makeDirectory(
   path: string,
   options: MakeDirectoryOptions
 ): Promise<
-  Result<undefined | string, UnexpectedError | NoEntryError | AccessError>
+  Result<
+    Tagged<string, DirectoryTag>,
+    UnexpectedError | NoEntryError | AccessError
+  >
 > {
   try {
-    const mkdirResult = await mkdir(path, options);
+    await mkdir(path, options);
     return {
       success: true,
-      data: mkdirResult,
+      data: path as Tagged<string, DirectoryTag>,
     };
   } catch (error) {
     if (error instanceof Error && "errno" in error) {
