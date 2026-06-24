@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-import type { DirectoryTag, ExistingTag } from "@/lib/fs/types";
+import type { DirectoryTag, ExistingTag, FileTag } from "@/lib/fs/types";
 import type { Result } from "@/types/result";
 import type { Tagged } from "@/types/tag";
 
@@ -14,13 +14,13 @@ export async function writeFile({
   parent: Tagged<string, DirectoryTag | ExistingTag>;
   name: string;
   content: string;
-}): Promise<Result<null, UnexpectedError>> {
+}): Promise<Result<Tagged<string, ExistingTag | FileTag>, UnexpectedError>> {
   const path = join(parent, name);
   try {
     await Bun.write(path, content);
     return {
       success: true,
-      data: null,
+      data: path as Tagged<string, ExistingTag | FileTag>,
     };
   } catch (error) {
     return {
