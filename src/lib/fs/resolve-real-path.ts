@@ -1,6 +1,8 @@
 import { realpath } from "node:fs/promises";
 
+import type { AbsoluteTag, ExistingTag } from "@/lib/fs/types";
 import type { Result } from "@/types/result";
+import type { Tagged } from "@/types/tag";
 
 import { UnexpectedError } from "@/utils/errors/unexpected";
 import { NoEntryError } from "@/lib/fs/errors/no-entry";
@@ -8,12 +10,17 @@ import { AccessError } from "@/lib/fs/errors/access";
 
 export async function resolveRealPath(
   path: string
-): Promise<Result<string, UnexpectedError | NoEntryError | AccessError>> {
+): Promise<
+  Result<
+    Tagged<string, AbsoluteTag | ExistingTag>,
+    UnexpectedError | NoEntryError | AccessError
+  >
+> {
   try {
     const realPath = await realpath(path);
     return {
       success: true,
-      data: realPath,
+      data: realPath as Tagged<string, AbsoluteTag | ExistingTag>,
     };
   } catch (error) {
     if (error instanceof Error && "errno" in error) {
