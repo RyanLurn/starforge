@@ -4,10 +4,11 @@ import type { Result } from "@/types/result";
 
 import { UnexpectedError } from "@/utils/errors/unexpected";
 import { NoEntryError } from "@/lib/fs/errors/no-entry";
+import { AccessError } from "@/lib/fs/errors/access";
 
 export async function resolveRealPath(
   path: string
-): Promise<Result<string, UnexpectedError | NoEntryError>> {
+): Promise<Result<string, UnexpectedError | NoEntryError | AccessError>> {
   try {
     const realPath = await realpath(path);
     return {
@@ -22,6 +23,12 @@ export async function resolveRealPath(
           return {
             success: false,
             error: new NoEntryError({ path, cause: exception }),
+          };
+        }
+        case "EACCES": {
+          return {
+            success: false,
+            error: new AccessError({ path, cause: exception }),
           };
         }
       }
