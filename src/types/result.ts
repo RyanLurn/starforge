@@ -1,15 +1,13 @@
-import type { AppError } from "@/types/app-error";
+import type { BaseError } from "@/utils/errors/base";
 
-export type Ok<TData> = {
+export type Ok<D> = {
   success: true;
-  data: TData;
+  data: D;
 };
 
-export type Err<TCode extends string> = {
+export type Err<E extends BaseError<string>> = {
   success: false;
-  error: AppError<TCode>;
+  error: E;
 };
 
-export type Result<TData, TErrorCode extends string> =
-  | Err<TErrorCode>
-  | Ok<TData>;
+export type Result<D, E extends BaseError<string>> = Err<E> | Ok<D>;
